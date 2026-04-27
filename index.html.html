@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9주차 JD 분석 실습 | 진로선택과 취업준비</title>
+<style>
+  :root {
+    --navy: #1A2B4A;
+    --navy-dark: #0F1F36;
+    --teal: #0D9488;
+    --teal-light: #CCFBF1;
+    --blue: #3B82F6;
+    --blue-light: #DBEAFE;
+    --green: #16A34A;
+    --green-light: #F0FDF4;
+    --gray: #64748B;
+    --light-gray: #E2E8F0;
+    --off-white: #F8FAFC;
+    --white: #FFFFFF;
+    --dark: #1E293B;
+    --red: #DC2626;
+    --amber: #F59E0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    font-family: "맑은 고딕", "Malgun Gothic", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--off-white);
+    color: var(--dark);
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+  body { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+    color: var(--white);
+    padding: 24px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(26, 43, 74, 0.15);
+  }
+  .header h1 { font-size: 22px; margin-bottom: 6px; }
+  .header .subject { color: #94A3B8; font-size: 13px; }
+  .header .tag {
+    display: inline-block;
+    background: var(--teal);
+    color: var(--white);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-top: 10px;
+    font-weight: 600;
+  }
+
+  .progress-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .progress-step {
+    flex: 1;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--light-gray);
+    transition: background 0.3s;
+  }
+  .progress-step.done { background: var(--teal); }
+
+  .section {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  }
+  .student-info {
+    border-top: 3px solid var(--teal);
+  }
+  .student-info .section-title .step {
+    background: var(--teal);
+    font-size: 14px;
+  }
+  .student-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.7fr;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .student-grid label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    margin-bottom: 4px;
+  }
+  .student-grid input, .student-grid select {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--dark);
+    outline: none;
+  }
+  .student-grid input:focus, .student-grid select:focus {
+    border-color: var(--teal);
+  }
+  @media (max-width: 600px) {
+    .student-grid { grid-template-columns: 1fr 1fr; }
+    .student-grid > div:last-child { grid-column: 1 / -1; }
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--light-gray);
+  }
+  .section-title .step {
+    background: var(--teal);
+    color: var(--white);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .section-hint {
+    font-size: 12.5px;
+    color: var(--gray);
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 6px;
+    margin-top: 10px;
+  }
+  select, input[type="text"], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1.5px solid var(--light-gray);
+    border-radius: 8px;
+    background: var(--white);
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select:focus, input:focus, textarea:focus { border-color: var(--teal); }
+  textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .hint-tiny { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+  .example-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .example-btn {
+    background: var(--blue-light);
+    color: var(--blue);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+  }
+  .example-btn:hover { background: var(--blue); color: var(--white); }
+
+  .keyword-area {
+    background: var(--off-white);
+    border: 1px dashed var(--light-gray);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 10px;
+  }
+  .keyword-input-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .keyword-input-row input { flex: 1; }
+  .keyword-add-btn {
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    padding: 0 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .tag-type-btns {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .type-btn {
+    flex: 1;
+    padding: 8px 8px;
+    border: 1.5px solid;
+    border-radius: 8px;
+    background: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .type-btn.hard { border-color: var(--blue); color: var(--blue); }
+  .type-btn.hard.active { background: var(--blue); color: var(--white); }
+  .type-btn.soft { border-color: var(--green); color: var(--green); }
+  .type-btn.soft.active { background: var(--green); color: var(--white); }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 28px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag.hard { background: var(--blue-light); color: var(--blue); }
+  .tag.soft { background: var(--green-light); color: var(--green); }
+  .tag .del {
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0.7;
+  }
+  .tag .del:hover { opacity: 1; }
+
+  .summary-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .stat-chip {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .stat-chip.hard { background: var(--blue-light); color: var(--blue); }
+  .stat-chip.soft { background: var(--green-light); color: var(--green); }
+  .stat-chip .num { font-size: 20px; font-weight: 800; display: block; }
+
+  .action-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .btn-primary { background: var(--teal); color: var(--white); }
+  .btn-primary:hover { background: #0B7B72; }
+  .btn-secondary { background: var(--light-gray); color: var(--dark); }
+  .btn-secondary:hover { background: #CBD5E1; }
+
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100px);
+    background: var(--navy);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 1000;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { background: var(--green); }
+  .toast.error { background: var(--red); }
+
+  .preview-card {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 14px;
+    display: none;
+  }
+  .preview-card.show { display: block; }
+  .preview-card h3 { color: var(--teal-light); font-size: 14px; margin-bottom: 8px; }
+  .preview-card p { font-size: 13px; line-height: 1.6; color: #CBD5E1; margin-bottom: 6px; }
+  .preview-card strong { color: var(--white); }
+
+  @media (max-width: 600px) {
+    body { padding: 12px 10px; }
+    .header { padding: 18px 16px; }
+    .header h1 { font-size: 18px; }
+    .section { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>계열별 직무 역량 이해 1 — 실습</h1>
+  <div class="subject">진로선택과 취업준비</div>
+  <span class="tag">9주차 · 산업·직무 & JD 분석</span>
+</div>
+
+<!-- 학생 정보 입력 -->
+<div class="section student-info">
+  <div class="section-title">
+    <span class="step">👤</span>
+    학생 정보
+  </div>
+  <div class="section-hint">이름·학번·반을 입력하세요. 저장 시 교수님께 전송됩니다.</div>
+  <div class="student-grid">
+    <div>
+      <label>이름</label>
+      <input type="text" id="studentName" placeholder="예: 홍길동">
+    </div>
+    <div>
+      <label>학번</label>
+      <input type="text" id="studentId" placeholder="예: 20211234">
+    </div>
+    <div>
+      <label>분반</label>
+      <select id="studentClass">
+        <option value="">선택</option>
+        <option value="A반">A반</option>
+        <option value="B반">B반</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-step" id="prog1"></div>
+  <div class="progress-step" id="prog2"></div>
+  <div class="progress-step" id="prog3"></div>
+  <div class="progress-step" id="prog4"></div>
+</div>
+
+<!-- Step 1: 전공·희망 직군 -->
+<div class="section">
+  <div class="section-title">
+    <span class="step">1</span>
+    전공과 희망 직군 선택
+  </div>
+  <div class="section-hint">본인 전공과 관심 있는 직군을 선택하세요.</div>
+
+  <label>📚 학부 · 전공</label>
+  <select id="department">
+    <option value="">전공을 선택하세요</option>
+    <optgroup label="인문융합공공인재학부">
+      <option>문예창작미디어콘텐츠홍보전공</option>
+      <option>영미언어문화전공</option>
+      <option>행정학전공</option>
+    </optgroup>
+    <optgroup label="법경영학부">
+      <option>법학전공</option>
+      <option>경영학전공</option>
+    </optgroup>
+    <optgroup label="웰니스산업융합학부">
+      <option>의류산업학전공</option>
+      <option>복지상담학전공</option>
+      <option>식품영양학전공</option>
+      <option>융합레포츠전공</option>
+    </optgroup>
+    <optgroup label="식물자원조경학부">
+      <option>식물생명환경전공</option>
+      <option>조경학전공</option>
+    </optgroup>
+    <optgroup label="동물생명융합학부">
+      <option>동물생명과학전공</option>
+      <option>동물응용과학전공</option>
+    </optgroup>
+    <optgroup label="생명공학부">
+      <option>원예생명공학전공</option>
+      <option>응용생명공학전공</option>
+    </optgroup>
+    <optgroup label="건설환경공학부">
+      <option>토목공학전공</option>
+      <option>환경공학전공</option>
+    </optgroup>
+    <optgroup label="사회안전시스템공학부">
+      <option>지역자원시스템공학전공</option>
+      <option>안전공학전공</option>
+    </optgroup>
+    <optgroup label="식품생명화학공학부">
+      <option>식품생명공학전공</option>
+      <option>화학전공</option>
+    </optgroup>
+    <optgroup label="컴퓨터응용수학부">
+      <option>소프트웨어&서비스컴퓨팅전공</option>
+      <option>소프트웨어융합전공</option>
+      <option>응용수학전공</option>
+    </optgroup>
+    <optgroup label="ICT로봇기계공학부">
+      <option>ICT로봇공학전공</option>
+      <option>기계공학전공</option>
+    </optgroup>
+    <optgroup label="전자전기공학부">
+      <option>전자공학전공</option>
+      <option>전기공학전공</option>
+    </optgroup>
+    <optgroup label="건축융합학부">
+      <option>건축학전공</option>
+      <option>건축공학전공</option>
+    </optgroup>
+    <optgroup label="AI융합학부">
+      <option>스마트팜융합전공</option>
+      <option>빅데이터융합전공</option>
+      <option>스마트헬스케어융합전공</option>
+      <option>스마트애그리푸드시스템전공</option>
+      <option>반도체융합전공</option>
+      <option>공공헬스케어융합전공</option>
+    </optgroup>
+    <optgroup label="디자인예술스포츠학부">
+      <option>시각영상디자인전공</option>
+      <option>스포츠과학전공</option>
+      <option>제품공간디자인전공</option>
+      <option>귀금속보석공예전공</option>
+      <option>실용음악학전공</option>
+    </optgroup>
+  </select>
+
+  <label>🎯 희망 산업 분야</label>
+  <select id="industry">
+    <option value="">선택하세요</option>
+    <option>소비재 / FMCG (식품·화장품·생활용품)</option>
+    <option>패션 / 뷰티</option>
+    <option>제조 / 중공업</option>
+    <option>서비스 / 유통</option>
+    <option>IT / 소프트웨어</option>
+    <option>금융 / 컨설팅</option>
+    <option>공공 / 행정</option>
+    <option>교육 / 연구</option>
+    <option>문화 / 콘텐츠 / 미디어</option>
+    <option>바이오 / 제약 / 헬스케어</option>
+    <option>건설 / 건축 / 토목</option>
+    <option>환경 / ESG / 에너지</option>
+    <option>농업 / 스마트팜 / 애그테크</option>
+    <option>기타</option>
+  </select>
+
+  <label>💼 희망 직군</label>
+  <input type="text" id="jobTitle" placeholder="예: 식품개발 연구원, 브랜드 마케터, 백엔드 개발자">
+  <div class="hint-tiny">구체적인 직무명을 적어주세요. 정해지지 않았다면 '관심 분야'를 적어도 됩니다.</div>
+</div>
+
+<!-- Step 2: JD 입력 -->
+<div class="section">
+  <div class="section-title">
+    <span class="step">2</span>
+    직무기술서(JD) 입력
+  </div>
+  <div class="section-hint">
+    잡코리아·사람인·원티드 등에서 관심 있는 채용공고를 찾아 '담당 업무·필수 역량·우대 사항' 부분을 복사해서 붙여넣으세요.
+    찾기 어려우면 아래 예시 중 본인 전공과 가까운 것을 선택하세요.
+  </div>
+
+  <label>📋 JD 내용 붙여넣기</label>
+  <textarea id="jdText" rows="8" placeholder="[담당 업무]
+- ...
+
+[필수 역량]
+- ...
+
+[우대 사항]
+- ..."></textarea>
+
+  <div class="example-btns">
+    <button class="example-btn" onclick="loadExample('food_rd')">🍜 식품 R&D 연구원</button>
+    <button class="example-btn" onclick="loadExample('cosmetic_marketer')">💄 화장품 브랜드 마케터</button>
+    <button class="example-btn" onclick="loadExample('data_analyst')">📊 데이터 분석가</button>
+    <button class="example-btn" onclick="loadExample('qa_engineer')">🔬 품질관리(QC)</button>
+    <button class="example-btn" onclick="loadExample('architect')">🏛 건축 설계사</button>
+    <button class="example-btn" onclick="loadExample('content_planner')">✍️ 콘텐츠 기획자</button>
+    <button class="example-btn" onclick="loadExample('smart_farm')">🌾 스마트팜 기획</button>
+    <button class="example-btn" onclick="loadExample('animal_care')">🐾 동물보건·관리</button>
+  </div>
+</div>
+
+<!-- Step 3: 키워드 추출 -->
+<div class="section">
+  <div class="section-title">
+    <span class="step">3</span>
+    역량 키워드 추출 & 분류
+  </div>
+  <div class="section-hint">
+    JD에서 <strong style="color:var(--blue)">Hard Skill</strong>(측정 가능한 기술·자격)과
+    <strong style="color:var(--green)">Soft Skill</strong>(행동·태도 기반 역량)을 각각 3~5개씩 뽑아보세요.
+  </div>
+
+  <div class="keyword-area">
+    <div class="tag-type-btns">
+      <button class="type-btn hard active" id="typeHard" onclick="selectType('hard')">🔵 Hard Skill</button>
+      <button class="type-btn soft" id="typeSoft" onclick="selectType('soft')">🟢 Soft Skill</button>
+    </div>
+    <div class="keyword-input-row">
+      <input type="text" id="keywordInput" placeholder="예: Excel 활용 / 팀 커뮤니케이션"
+             onkeydown="if(event.key==='Enter'){event.preventDefault();addKeyword();}">
+      <button class="keyword-add-btn" onclick="addKeyword()">추가</button>
+    </div>
+    <div class="tag-list" id="tagList">
+      <div style="color:var(--gray); font-size:12px; padding:6px;">아직 추가된 키워드가 없습니다</div>
+    </div>
+    <div class="summary-stats">
+      <div class="stat-chip hard"><span class="num" id="hardCount">0</span>Hard Skill</div>
+      <div class="stat-chip soft"><span class="num" id="softCount">0</span>Soft Skill</div>
+    </div>
+  </div>
+</div>
+
+<!-- Step 4: 정리 -->
+<div class="section">
+  <div class="section-title">
+    <span class="step">4</span>
+    직무 목적 & 부족 역량 정리
+  </div>
+  <div class="section-hint">JD를 읽은 후, 본인의 생각을 자유롭게 정리해보세요.</div>
+
+  <label>🎯 이 직무의 목적 (한 문장 요약)</label>
+  <textarea id="jobPurpose" rows="2" placeholder="예: 브랜드의 인지도를 높이기 위해 디지털 채널을 기획·운영하는 직무"></textarea>
+
+  <label>🔻 내가 부족한 역량 (솔직하게)</label>
+  <textarea id="weakness" rows="3" placeholder="예: 데이터 분석 도구 활용 경험이 없음. 인턴 경험이 없어서 실무 감각이 부족함."></textarea>
+
+  <!-- Preview -->
+  <div class="preview-card" id="previewCard">
+    <h3>📋 내 실습 요약</h3>
+    <p><strong>전공:</strong> <span id="p_dept">-</span></p>
+    <p><strong>희망 직군:</strong> <span id="p_job">-</span></p>
+    <p><strong>Hard Skill:</strong> <span id="p_hard">-</span></p>
+    <p><strong>Soft Skill:</strong> <span id="p_soft">-</span></p>
+  </div>
+</div>
+
+<div class="action-bar">
+  <button class="btn btn-primary" onclick="saveAndShow()">💾 저장하고 제출하기</button>
+  <button class="btn btn-secondary" onclick="exportTxt()">📤 결과 텍스트 내보내기</button>
+  <button class="btn btn-secondary" onclick="resetAll()">🔄 초기화</button>
+</div>
+
+<div style="text-align:center; color:var(--gray); font-size:11px; margin: 24px 0 8px 0; line-height:1.6;">
+  💾 저장 시 교수님께 자동 전송됩니다 · 같은 학번으로 여러 번 제출해도 OK<br>
+  브라우저에도 저장되어 10주차 실습에 자동 연동됩니다
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const state = {
+  keywords: [],
+  currentType: "hard"
+};
+const STORAGE_KEY = "career_w9_standalone_v1";
+
+const examples = {
+  food_rd: `[담당 업무]
+- 식품 신제품 개발 및 기존 제품 개선
+- 원료 개발 및 배합 설계
+- 시제품 제조 및 관능평가 진행
+- 식품 안전 기준 준수 및 품질 검증
+
+[필수 역량]
+- 식품공학/생명공학/화학 전공
+- 식품기사 또는 관련 자격증
+- 실험 설계 및 데이터 분석 능력
+- 엑셀·통계 프로그램 활용
+
+[우대 사항]
+- HACCP 관련 경험
+- 식품 관련 학회 또는 인턴 경험
+- 영어 기술문서 독해 가능자
+- 적극적 커뮤니케이션 및 팀워크`,
+
+  cosmetic_marketer: `[담당 업무]
+- 화장품 브랜드 마케팅 전략 기획 및 실행
+- 디지털 채널(인스타·유튜브·네이버) 콘텐츠 기획
+- 신제품 런칭 캠페인 운영
+- 소비자 트렌드 및 경쟁사 분석
+
+[필수 역량]
+- 경영·마케팅·홍보 관련 전공 또는 역량
+- 디지털 마케팅 툴 활용 경험 (GA4, Meta Ads 등)
+- 엑셀·PPT 활용 능력
+- 기획서 작성 및 데이터 분석 역량
+
+[우대 사항]
+- 마케팅 공모전 수상 경험
+- SNS 채널 운영 경험
+- Photoshop·Premiere 활용 가능자
+- 영어 마케팅 자료 활용 가능`,
+
+  data_analyst: `[담당 업무]
+- 서비스 데이터 분석 및 인사이트 도출
+- 대시보드 설계 및 정기 리포트 작성
+- A/B 테스트 설계 및 결과 분석
+- 데이터 기반 의사결정 지원
+
+[필수 역량]
+- SQL 활용 능력 (JOIN·Window 함수 수준)
+- Python 또는 R 사용 경험
+- 통계 기초 지식 (가설검정·회귀)
+- 데이터 시각화 도구 (Tableau, Looker 등)
+
+[우대 사항]
+- ADsP, SQLD, 빅데이터분석기사 자격증
+- 머신러닝 프로젝트 경험
+- BI 툴 활용 경험
+- 비즈니스 커뮤니케이션 능력`,
+
+  qa_engineer: `[담당 업무]
+- 제품 품질 검사 및 규격 관리
+- HACCP·ISO 인증 유지 관리
+- 품질 이슈 원인 분석 및 개선
+- 품질 문서화 및 정기 보고
+
+[필수 역량]
+- 생명공학·식품공학·화학 전공
+- 품질경영기사 또는 식품기사 자격증
+- 통계적 품질관리(SQC) 이해
+- 엑셀·품질관리 프로그램 활용
+
+[우대 사항]
+- HACCP 팀리더 교육 이수
+- ISO 9001/22000 경험
+- 영어 기술문서 이해 가능
+- 꼼꼼함·문서화 능력`,
+
+  architect: `[담당 업무]
+- 건축 기본·실시 설계 도서 작성
+- 인허가 문서 작성 및 관련 법규 검토
+- 설계 협의회 및 시공사 커뮤니케이션
+- BIM 모델링 및 도면 관리
+
+[필수 역량]
+- 건축학 또는 건축공학 전공
+- AutoCAD·Revit·Sketchup 능숙
+- 건축법규 이해
+- 도면 해석 및 작성 능력
+
+[우대 사항]
+- 건축사 자격 or 건축기사 보유자
+- BIM 관련 자격증 또는 프로젝트 경험
+- 친환경 건축·LEED 경험
+- 해외 프로젝트 경험 및 영어 가능`,
+
+  content_planner: `[담당 업무]
+- 미디어 콘텐츠 기획 및 제작 총괄
+- 브랜드 스토리텔링 및 카피라이팅
+- 영상·이미지 콘텐츠 디렉션
+- 콘텐츠 성과 분석 및 개선
+
+[필수 역량]
+- 문예창작·미디어·홍보 관련 전공
+- 콘텐츠 기획서 작성 능력
+- 트렌드 분석 및 아이디어 발상
+- 영상·이미지 제작 툴 기초 이해
+
+[우대 사항]
+- Premiere, Photoshop 활용 가능
+- 유튜브·인스타그램 운영 경험
+- 카피라이팅·공모전 수상 경력
+- 팀 협업 경험 풍부한 자`,
+
+  smart_farm: `[담당 업무]
+- 스마트팜 운영 기획 및 IoT 시스템 관리
+- 작물 재배 데이터 수집 및 분석
+- 자동화 시스템 운영 최적화
+- 농가 대상 스마트팜 기술 보급
+
+[필수 역량]
+- 원예·식물생명·농업 관련 전공
+- IoT 기초 지식
+- 엑셀·데이터 분석 능력
+- 농업 현장 이해 및 커뮤니케이션
+
+[우대 사항]
+- 스마트팜 관련 실습 또는 인턴 경험
+- 드론·센서 장비 운용 경험
+- 농업 관련 자격증
+- 영어 기술문서 이해`,
+
+  animal_care: `[담당 업무]
+- 반려동물 건강관리 및 진료 보조
+- 동물보건 데이터 기록 및 관리
+- 보호자 상담 및 사육 가이드 제공
+- 동물 복지 기준 준수 관리
+
+[필수 역량]
+- 동물생명·응용 관련 전공
+- 동물보건사 자격 또는 동등 역량
+- 기본 진료 보조 경험
+- 꼼꼼한 기록 관리 능력
+
+[우대 사항]
+- 동물병원 실습 경험
+- 반려동물 관련 자격증(반려동물관리사 등)
+- 생물·생명 기초 과목 이수
+- 보호자 대응 서비스 마인드`
+};
+
+function toast(msg, type = "success") {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show " + type;
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+function loadExample(key) {
+  document.getElementById("jdText").value = examples[key];
+  updateProgress();
+  toast("예시 JD를 불러왔습니다");
+}
+
+function selectType(type) {
+  state.currentType = type;
+  document.getElementById("typeHard").classList.toggle("active", type === "hard");
+  document.getElementById("typeSoft").classList.toggle("active", type === "soft");
+}
+
+function addKeyword() {
+  const input = document.getElementById("keywordInput");
+  const text = input.value.trim();
+  if (!text) return;
+  state.keywords.push({ text, type: state.currentType });
+  input.value = "";
+  renderTags();
+  updateProgress();
+}
+
+function removeKeyword(i) {
+  state.keywords.splice(i, 1);
+  renderTags();
+  updateProgress();
+}
+
+function renderTags() {
+  const list = document.getElementById("tagList");
+  if (state.keywords.length === 0) {
+    list.innerHTML = '<div style="color:var(--gray); font-size:12px; padding:6px;">아직 추가된 키워드가 없습니다</div>';
+  } else {
+    list.innerHTML = state.keywords.map((kw, i) => `
+      <span class="tag ${kw.type}">
+        ${kw.type === 'hard' ? '🔵' : '🟢'} ${escapeHtml(kw.text)}
+        <span class="del" onclick="removeKeyword(${i})">×</span>
+      </span>
+    `).join("");
+  }
+  const hard = state.keywords.filter(k => k.type === "hard").length;
+  const soft = state.keywords.filter(k => k.type === "soft").length;
+  document.getElementById("hardCount").textContent = hard;
+  document.getElementById("softCount").textContent = soft;
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function updateProgress() {
+  const dept = document.getElementById("department").value;
+  const job = document.getElementById("jobTitle").value;
+  const jd = document.getElementById("jdText").value;
+  const kw = state.keywords.length;
+  const purpose = document.getElementById("jobPurpose").value;
+  const weak = document.getElementById("weakness").value;
+
+  document.getElementById("prog1").classList.toggle("done", !!(dept && job));
+  document.getElementById("prog2").classList.toggle("done", jd.length > 30);
+  document.getElementById("prog3").classList.toggle("done", kw >= 3);
+  document.getElementById("prog4").classList.toggle("done", !!(purpose && weak));
+}
+
+// Google Apps Script Web App URL — 배포 후 여기에 URL 붙여넣기
+// ═══════════════════════════════════════════════════════════════
+// ⚠️ 설정 필수: 아래 URL을 Apps Script 웹앱 URL로 교체하세요
+// 설정 방법: "9주차_시트연동_설정가이드.md" 문서 참고
+// 예시: const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfyc.../exec";
+// ═══════════════════════════════════════════════════════════════
+const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyDLCLSyrKyZstgvv5BGvy_9ZsW5GXRo2Xp2P0_6ZEpIzpKeCJ6REPsn8_lPER-0tSM6A/exec";
+
+function saveAndShow() {
+  const studentName = document.getElementById("studentName").value.trim();
+  const studentId = document.getElementById("studentId").value.trim();
+  const studentClass = document.getElementById("studentClass").value;
+
+  const data = {
+    studentName,
+    studentId,
+    studentClass,
+    department: document.getElementById("department").value,
+    industry: document.getElementById("industry").value,
+    jobTitle: document.getElementById("jobTitle").value,
+    jdText: document.getElementById("jdText").value,
+    keywords: state.keywords,
+    jobPurpose: document.getElementById("jobPurpose").value,
+    weakness: document.getElementById("weakness").value
+  };
+
+  // 학생 정보 검증
+  if (!studentName || !studentId || !studentClass) {
+    toast("이름·학번·분반을 먼저 입력해주세요", "error");
+    // 학생 정보 섹션으로 스크롤
+    document.querySelector(".student-info").scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  // 실습 내용 검증
+  if (!data.department || !data.jobTitle || state.keywords.length === 0) {
+    toast("전공·희망 직군·키워드(최소 1개)는 필수입니다", "error");
+    return;
+  }
+
+  // 로컬 저장 (기존 로직 유지 — 10주차 연동용)
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem("career_w9_v1", JSON.stringify(data));
+  } catch (e) {
+    console.error(e);
+  }
+
+  // Google Sheets로 전송
+  if (GAS_ENDPOINT && GAS_ENDPOINT !== "YOUR_APPS_SCRIPT_URL_HERE") {
+    toast("저장 중...", "success");
+    // GAS는 CORS 제약 때문에 no-cors 모드 사용
+    // 응답 확인 불가능하지만 데이터는 정상 전송됨
+    const hardKw = state.keywords.filter(k => k.type === "hard").map(k => k.text).join(", ");
+    const softKw = state.keywords.filter(k => k.type === "soft").map(k => k.text).join(", ");
+    const payload = {
+      timestamp: new Date().toISOString(),
+      studentName,
+      studentId,
+      studentClass,
+      department: data.department,
+      industry: data.industry,
+      jobTitle: data.jobTitle,
+      jdText: data.jdText,
+      hardSkills: hardKw,
+      softSkills: softKw,
+      jobPurpose: data.jobPurpose,
+      weakness: data.weakness
+    };
+    fetch(GAS_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      toast("✅ 저장 완료! 교수님께 전송되었습니다");
+    }).catch(err => {
+      console.error(err);
+      toast("⚠️ 전송 실패 — 브라우저에는 저장됨", "error");
+    });
+  } else {
+    toast("✅ 저장 완료! (10주차에 자동 연동)", "success");
+  }
+
+  // Show preview
+  const card = document.getElementById("previewCard");
+  document.getElementById("p_dept").textContent = data.department;
+  document.getElementById("p_job").textContent = data.jobTitle;
+  const hard = state.keywords.filter(k => k.type === "hard").map(k => k.text).join(", ") || "없음";
+  const soft = state.keywords.filter(k => k.type === "soft").map(k => k.text).join(", ") || "없음";
+  document.getElementById("p_hard").textContent = hard;
+  document.getElementById("p_soft").textContent = soft;
+  card.classList.add("show");
+  setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+}
+
+function exportTxt() {
+  const data = {
+    department: document.getElementById("department").value,
+    industry: document.getElementById("industry").value,
+    jobTitle: document.getElementById("jobTitle").value,
+    jdText: document.getElementById("jdText").value,
+    keywords: state.keywords,
+    jobPurpose: document.getElementById("jobPurpose").value,
+    weakness: document.getElementById("weakness").value
+  };
+
+  let text = "==========================================\n";
+  text += "진로선택과 취업준비 - 9주차 실습 결과\n";
+  text += "==========================================\n\n";
+  text += `[전공] ${data.department || "(미입력)"}\n`;
+  text += `[희망 산업] ${data.industry || "(미입력)"}\n`;
+  text += `[희망 직군] ${data.jobTitle || "(미입력)"}\n\n`;
+  text += "--- 직무기술서(JD) ---\n";
+  text += (data.jdText || "(작성 없음)") + "\n\n";
+  text += "--- Hard Skill 키워드 ---\n";
+  state.keywords.filter(k => k.type === "hard").forEach(k => text += `• ${k.text}\n`);
+  text += "\n--- Soft Skill 키워드 ---\n";
+  state.keywords.filter(k => k.type === "soft").forEach(k => text += `• ${k.text}\n`);
+  text += `\n--- 직무 목적 ---\n${data.jobPurpose || "(작성 없음)"}\n\n`;
+  text += `--- 내가 부족한 역량 ---\n${data.weakness || "(작성 없음)"}\n`;
+
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `9주차_JD분석_${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("결과 파일 다운로드 완료");
+}
+
+function resetAll() {
+  if (!confirm("실습 내용을 모두 초기화합니다. 계속하시겠습니까?")) return;
+  state.keywords = [];
+  ["department","industry","jobTitle","jdText","jobPurpose","weakness","keywordInput"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  renderTags();
+  updateProgress();
+  selectType("hard");
+  document.getElementById("previewCard").classList.remove("show");
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem("career_w9_v1");
+  toast("초기화 완료");
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem("career_w9_v1");
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    document.getElementById("studentName").value = data.studentName || "";
+    document.getElementById("studentId").value = data.studentId || "";
+    document.getElementById("studentClass").value = data.studentClass || "";
+    document.getElementById("department").value = data.department || "";
+    document.getElementById("industry").value = data.industry || "";
+    document.getElementById("jobTitle").value = data.jobTitle || "";
+    document.getElementById("jdText").value = data.jdText || "";
+    document.getElementById("jobPurpose").value = data.jobPurpose || "";
+    document.getElementById("weakness").value = data.weakness || "";
+    state.keywords = data.keywords || [];
+    renderTags();
+    updateProgress();
+  } catch (e) { console.error(e); }
+}
+
+// Init
+document.addEventListener("DOMContentLoaded", () => {
+  loadSaved();
+  selectType("hard");
+  ["department","industry","jobTitle","jdText","jobPurpose","weakness"].forEach(id => {
+    document.getElementById(id).addEventListener("input", updateProgress);
+    document.getElementById(id).addEventListener("change", updateProgress);
+  });
+});
+</script>
+
+</body>
+</html>
